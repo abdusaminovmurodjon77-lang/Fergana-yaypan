@@ -1,83 +1,175 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mening Mini App'im</title>
-    <!-- Telegram Mini App rasmiy SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .card {
-            padding: 24px;
-            border-radius: 16px;
-            background-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
-            width: 100%;
-            max-width: 320px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        h2 {
-            margin-top: 0;
-            font-size: 22px;
-        }
-        p {
-            font-size: 16px;
-            color: var(--tg-theme-hint-color, #707579);
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            border: none;
-            border-radius: 10px;
-            background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Farg'ona ⇆ Yaypan Taxi</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #f4f6f9);
+      --text-color: var(--tg-theme-text-color, #222222);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --btn-bg: var(--tg-theme-button-color, #2481cc);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --hint-color: var(--tg-theme-hint-color, #8e8e93);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h2 {
+      margin: 0 0 5px 0;
+      font-size: 22px;
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--hint-color);
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--hint-color);
+      text-transform: uppercase;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d1d6;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: 15px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-submit:active {
+      opacity: 0.8;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--hint-color);
+    }
+  </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Xush kelibsiz! 👋</h2>
-        <p id="user-name">Foydalanuvchi aniqlanmoqda...</p>
-        <button id="main-btn">Tugmani bosish</button>
-    </div>
+  <div class="header">
+    <h2>🚕 Yaypan ⇆ Farg'ona</h2>
+    <p>Taksi buyurtma qilish va yo'lovchi qidirish</p>
+  </div>
 
-    <script>
-        // Telegram WebApp obyektini faollashtirish
-        const tg = window.Telegram.WebApp;
-        
-        // Ilovani ekranga to'liq yoyish
-        tg.expand();
+  <div class="card">
+    <form id="taxiForm">
+      <div class="form-group">
+        <label for="route">Yo'nalishni tanlang</label>
+        <select id="route" required>
+          <option value="Yaypan ➔ Farg'ona">Yaypan ➔ Farg'ona</option>
+          <option value="Farg'ona ➔ Yaypan">Farg'ona ➔ Yaypan</option>
+        </select>
+      </div>
 
-        // Foydalanuvchi ismini Telegram profildan olish
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            document.getElementById('user-name').innerText = `Salom, ${user.first_name}!`;
-        } else {
-            document.getElementById('user-name').innerText = "Salom, Mehmon!";
-        }
+      <div class="form-group">
+        <label for="type">Buyurtma turi</label>
+        <select id="type" required>
+          <option value="1 kishi">1 kishi</option>
+          <option value="2 kishi">2 kishi</option>
+          <option value="3 kishi">3 kishi</option>
+          <option value="To'liq salon (4 kishi)">To'liq salon (4 kishi)</option>
+          <option value="Pochta / Posilka">Pochta / Posilka</option>
+        </select>
+      </div>
 
-        // Tugma bosilganda bildirishnoma chiqarish
-        document.getElementById('main-btn').addEventListener('click', () => {
-            tg.showAlert("Tabriklaymiz! Birinchi Mini App'ingiz ishlayapti!");
-        });
-    </script>
+      <div class="form-group">
+        <label for="time">Jo'nash vaqti</label>
+        <input type="text" id="time" placeholder="Masalan: 10:00 da yoki Hozir" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Telefon raqamingiz</label>
+        <input type="tel" id="phone" placeholder="+998 90 123 45 67" required>
+      </div>
+
+      <button type="submit" class="btn-submit">Buyurtmani tasdiqlash</button>
+    </form>
+  </div>
+
+  <div class="footer">
+    Operator bilan aloqa: <b>@AbdusaminovMurodjon</b>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand(); // Oynani to'liq ekranga yoyish
+
+    const form = document.getElementById('taxiForm');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const route = document.getElementById('route').value;
+      const type = document.getElementById('type').value;
+      const time = document.getElementById('time').value;
+      const phone = document.getElementById('phone').value;
+
+      const orderData = {
+        route: route,
+        type: type,
+        time: time,
+        phone: phone,
+        user: tg.initDataUnsafe?.user?.first_name || 'Mijoz'
+      };
+
+      // Telegram Botga ma'lumotni yuborish
+      tg.sendData(JSON.stringify(orderData));
+      tg.close(); // Mini App'ni yopish
+    });
+  </script>
 </body>
 </html>
